@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Three.js – test</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #111; /* trochu světlejší, ať vidíš rozdíl */
+      color: #fff;
+      font-family: system-ui, sans-serif;
+    }
+    #info {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      font-size: 14px;
+      z-index: 10;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="info">Loading...</div>
+
+  <!-- Three.js z jiného CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script>
+    const info = document.getElementById('info');
+
+    // KONTROLA: načetlo se three.js?
+    if (typeof THREE === 'undefined') {
+      info.textContent = 'Three.js se nenačetlo (THREE je undefined). Zkontroluj internet nebo CDN.';
+    } else {
+      info.textContent = 'Three.js načteno, vytvářím scénu…';
+
+      // 1) SCÉNA
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x050816); // trochu světlejší tmavě modrá
+
+// ...
+
+      // 2) KAMERA
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+
+      // 3) RENDERER
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // 4) OBJEKT – krychle
+      
+      // OBJEKT – krychle
+      const geometry = new THREE.BoxGeometry(1, 1, 1);
+      const material = new THREE.MeshStandardMaterial({
+      color: 0xffaa00,
+      metalness: 0.3,
+      roughness: 1.7
+});
+      const cube = new THREE.Mesh(geometry, material);
+      scene.add(cube);
+
+      // 5) SVĚTLO
+// SVĚTLO – ambient + silnější point light
+      const ambient = new THREE.AmbientLight(0xffffff, 0.4); // celkové světlo
+      scene.add(ambient);
+
+      const light = new THREE.PointLight(0xffffff, 1.5); // bylo 1
+      light.position.set(5, 5, 5);
+      scene.add(light);
+      // 6) POZICE KAMERY
+      camera.position.z = 7;
+
+      // 7) RESIZE
+      window.addEventListener('resize', () => {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        renderer.setSize(w, h);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      });
+
+      // 8) LOOP
+      function animate() {
+        requestAnimationFrame(animate);
+
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.015;
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+
+      info.textContent = 'Běží to. Měla by být vidět rotující krychle.';
+      
+
+
+// KAMERA
+     camera.position.z = 7;
+     camera.position.y = 0.5;
+    }
+  </script>
+</body>
+</html>
